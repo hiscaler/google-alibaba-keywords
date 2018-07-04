@@ -7,13 +7,17 @@ import (
 	"net/url"
 	"crypto/tls"
 	"time"
+	"github.com/PuerkitoBio/goquery"
+	"strings"
+	"log"
 )
 
 type Google struct {
 	url          string
 	seedKeyword  string
 	Level        int
-	SearchResult SearchResult
+	Keywords     map[string]Keyword
+	SearchResult map[string]Keyword
 }
 
 type SearchResult struct {
@@ -44,7 +48,7 @@ func (g *Google) Search() *Google {
 	request, _ := http.NewRequest("GET", g.getUrl(), nil)
 	request.Header.Set("Connection", "keep-alive")
 	request.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")
-	proxy, _ := url.Parse("http://127.0.0.1:8080")
+	proxy, _ := url.Parse("http://127.0.0.1:1080")
 	tr := &http.Transport{
 		Proxy:           http.ProxyURL(proxy),
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -60,9 +64,23 @@ func (g *Google) Search() *Google {
 			if err != nil {
 				fmt.Printf("Read response body error: %s", err)
 			} else {
-				fmt.Println(string(content))
+				doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(content)))
+				if err == nil {
+					doc.Find("#brs .card-section a").Each(func(i int, selection *goquery.Selection) {
+						name := strings.Trim(selection.Text(), " ")
+						url, _ := selection.Attr("href")
+						fmt.Printf("%02d Keyword name = '%s' url = %s\n", i, name, url)
+						keyword := new(Keyword)
+						keyword.Class = directoryKeyword
+						keyword.Name = name
+						if k, err := keyword.save(); err != nil {
+							g.Keywords[name] = *k
+						}
+					})
+				} else {
+					log.Fatal(err)
+				}
 			}
-
 		}
 		defer response.Body.Close()
 	} else {
