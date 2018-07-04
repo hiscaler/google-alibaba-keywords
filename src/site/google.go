@@ -69,14 +69,19 @@ func (g *Google) Search() *Google {
 					doc.Find("#brs .card-section a").Each(func(i int, selection *goquery.Selection) {
 						name := strings.Trim(selection.Text(), " ")
 						url, _ := selection.Attr("href")
-						fmt.Printf("%02d Keyword name = '%s' url = %s\n", i, name, url)
+						fmt.Printf("#%02d Keyword name = '%s' url = %s\n", i+1, name, url)
 						keyword := new(Keyword)
-						keyword.Class = directoryKeyword
+						if g.Level == 0 {
+							keyword.Class = directoryKeyword
+						} else {
+							keyword.Class = adverbKeyword
+						}
 						keyword.Name = name
-						if k, err := keyword.save(); err != nil {
+						if k, err := keyword.save(); err == nil {
 							g.Keywords[name] = *k
 						}
 					})
+					g.Level += 1
 				} else {
 					log.Fatal(err)
 				}
