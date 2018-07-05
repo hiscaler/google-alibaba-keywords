@@ -77,7 +77,7 @@ func (g *Google) Search() *Google {
 							keyword.Class = adverbKeyword
 						}
 						keyword.Name = name
-						if k, err := keyword.save(); err == nil {
+						if k, err := keyword.Save(); err == nil {
 							g.Keywords[name] = *k
 						}
 					})
