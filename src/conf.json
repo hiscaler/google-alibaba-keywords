@@ -2,12 +2,16 @@
   "debug": true,
   "proxy": "http://127.0.0.1:1080",
   "api": {
-    "uri": "http://www.api.example.com",
+    "prefix": {
+      "debug": "http://www.api.example.com",
+      "prod": "http://www.api.example.com"
+    },
     "keyword": {
-      "index": ""
+      "index": "/keyword/index",
+      "submit": "/keyword/create"
     },
     "product": {
-      "submit": ""
+      "submit": "/product/index"
     }
   },
   "logger": {
