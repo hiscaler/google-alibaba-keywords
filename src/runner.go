@@ -7,12 +7,12 @@ import (
 	"errors"
 	"io/ioutil"
 	"encoding/json"
-	"api"
 	"site"
+	"response"
 )
 
 func main() {
-	keywordIndexResponse := api.KeywordIndexResponse{}
+	keywordIndexResponse := response.KeywordIndex{}
 	resp, err := http.Get(url.KeywordIndex())
 	if err != nil {
 		errors.New(err.Error())
