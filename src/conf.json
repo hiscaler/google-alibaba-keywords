@@ -1,0 +1,17 @@
+{
+  "debug": true,
+  "proxy": "http://127.0.0.1:1080",
+  "api": {
+    "uri": "http://www.api.example.com",
+    "keyword": {
+      "index": ""
+    },
+    "product": {
+      "submit": ""
+    }
+  },
+  "logger": {
+    "level": "debug",
+    "file": null
+  }
+}
