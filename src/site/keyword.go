@@ -3,10 +3,10 @@ package site
 import (
 	"strings"
 	"net/http"
-	"api"
 	"errors"
 	"encoding/json"
 	"fmt"
+	"url"
 )
 
 const directoryKeyword = 1
@@ -20,7 +20,7 @@ type Keyword struct {
 
 func (k Keyword) FindAll(cls int) []Keyword {
 	items := make([]Keyword, 10)
-	_, err := http.Get(api.UrlPrefix())
+	_, err := http.Get(url.KeywordIndex())
 	if err == nil {
 		body := `[{"Class":110,"Id":123,"Name":"hiscaler"},{"Class":111,"Id":456,"Name":"shuzi","dd":111}]`
 		fmt.Println(body)
