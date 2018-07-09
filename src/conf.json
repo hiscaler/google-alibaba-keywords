@@ -14,8 +14,15 @@
       "submit": "/product/index"
     }
   },
-  "logger": {
-    "level": "debug",
-    "file": null
+  "Logger": {
+    "Targets": [
+      {
+        "type": "ConsoleTarget"
+      },
+      {
+        "type": "FileTarget",
+        "FileName": "runtime/logs/app.log"
+      }
+    ]
   }
 }
