@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"url"
+	"logger"
 )
 
 const directoryKeyword = 1
@@ -38,6 +39,19 @@ func (k Keyword) FindAll(cls int) []Keyword {
 	}
 
 	return items
+}
+
+func (k *Keyword) updateMetaData() {
+	resp, err := http.Get("https://www.alibaba.com/trade/search?fsb=y&IndexArea=product_en&CatId=&SearchText=" + k.Name)
+	if err != nil {
+		logger.Instance.Error(err.Error())
+	} else {
+		if resp.StatusCode == 200 {
+			// Get page meta data and update table record.
+		} else {
+			fmt.Println("Can't get keyword meta data list.")
+		}
+	}
 }
 
 func (k *Keyword) Save() (*Keyword, error) {

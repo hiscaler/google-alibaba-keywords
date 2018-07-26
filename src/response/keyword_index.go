@@ -11,7 +11,8 @@ type Data struct {
 }
 
 type Items struct {
-	SiteName string
-	Id       int
-	Name     string
+	SiteName        string
+	Id              int
+	Name            string
+	QualifyKeywords []string
 }

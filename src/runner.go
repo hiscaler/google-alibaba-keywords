@@ -24,7 +24,10 @@ func main() {
 				g := new(site.Google)
 				g.Keywords = make(map[string]site.Keyword)
 				for _, item := range keywordIndexResponse.Data.Items {
-					logger.Instance.Info(fmt.Sprintf("Site Name = %s, Id = %d, Name = %s", item.SiteName, item.Id, item.Name))
+					logger.Instance.Info(fmt.Sprintf("Id = %d, Site Name = %s, Name = %s", item.Id, item.SiteName, item.Name))
+					for i, v := range item.QualifyKeywords {
+						logger.Instance.Info(fmt.Sprintf("Qualify Keyword %d = %s", i+1, v))
+					}
 					g.SetSeed(item.Name)
 					g.Search()
 					logger.Instance.Debug(fmt.Sprintf("%# v", pretty.Formatter(*g)))
