@@ -13,11 +13,12 @@ import (
 )
 
 type Google struct {
-	url          string
-	seedKeyword  string
-	Level        int
-	Keywords     map[string]Keyword
-	SearchResult map[string]Keyword
+	url             string
+	seedKeyword     string
+	Level           int
+	Keywords        map[string]Keyword
+	SearchResult    map[string]Keyword
+	QualifyKeywords []string
 }
 
 type SearchResult struct {
@@ -39,6 +40,13 @@ func (g *Google) SetSeed(seedKeyword string) *Google {
 	g.seedKeyword = seedKeyword
 	url := fmt.Sprintf("https://www.google.com/search?q=%s&ie=UTF-8", seedKeyword)
 	g.setUrl(url)
+
+	return g
+}
+
+// 设置限定词
+func (g *Google) SetQualifyKeywords(keyowrds []string) *Google {
+	g.QualifyKeywords = keyowrds
 
 	return g
 }
@@ -68,17 +76,27 @@ func (g *Google) Search() *Google {
 				if err == nil {
 					doc.Find("#brs .card-section a").Each(func(i int, selection *goquery.Selection) {
 						name := strings.Trim(selection.Text(), " ")
-						url, _ := selection.Attr("href")
-						logger.Instance.Info(fmt.Sprintf("#%02d Keyword name = '%s' url = %s", i+1, name, url))
-						keyword := new(Keyword)
-						if g.Level == 0 {
-							keyword.Class = directoryKeyword
-						} else {
-							keyword.Class = adverbKeyword
+						// 检查是否在限定词中
+						isValid := false
+						for _, v := range g.QualifyKeywords {
+							if v == name {
+								isValid = true
+								break;
+							}
 						}
-						keyword.Name = name
-						if k, err := keyword.Save(); err == nil {
-							g.Keywords[name] = *k
+						if isValid {
+							url, _ := selection.Attr("href")
+							logger.Instance.Info(fmt.Sprintf("#%02d Keyword name = '%s' url = %s", i+1, name, url))
+							keyword := new(Keyword)
+							if g.Level == 0 {
+								keyword.Class = directoryKeyword
+							} else {
+								keyword.Class = adverbKeyword
+							}
+							keyword.Name = name
+							if k, err := keyword.Save(); err == nil {
+								g.Keywords[name] = *k
+							}
 						}
 					})
 					g.Level += 1

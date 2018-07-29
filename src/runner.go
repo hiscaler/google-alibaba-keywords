@@ -29,6 +29,7 @@ func main() {
 						logger.Instance.Info(fmt.Sprintf("Qualify Keyword %d = %s", i+1, v))
 					}
 					g.SetSeed(item.Name)
+					g.SetQualifyKeywords(item.QualifyKeywords)
 					g.Search()
 					logger.Instance.Debug(fmt.Sprintf("%# v", pretty.Formatter(*g)))
 				}
