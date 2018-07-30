@@ -114,26 +114,29 @@ func (g *Gg) Parse() *Gg {
 	if err == nil {
 		doc.Find("#brs .card-section a").Each(func(i int, selection *goquery.Selection) {
 			name := strings.Trim(selection.Text(), " ")
-			// 检查是否在限定词中
-			isValid := false
-			for _, v := range g.QualifyKeywords {
-				if v == name {
-					isValid = true
-					break
+			if len(name) > 0 {
+				// 检查是否在限定词中
+				isValid := false
+				for _, v := range g.QualifyKeywords {
+					if v == name {
+						isValid = true
+						break
+					}
 				}
-			}
-			if isValid {
-				url, _ := selection.Attr("href")
-				logger.Instance.Info(fmt.Sprintf("#%02d Keyword name = '%s' url = %s", i+1, name, url))
-				keyword := new(Keyword)
-				if g.Level == 0 {
-					keyword.Class = directoryKeyword
-				} else {
-					keyword.Class = adverbKeyword
-				}
-				keyword.Name = name
-				if k, err := keyword.Save(); err == nil {
-					g.Keywords[name] = *k
+				if isValid {
+					url, _ := selection.Attr("href")
+					logger.Instance.Info(fmt.Sprintf("#%02d Keyword name = '%s' url = %s", i+1, name, url))
+					keyword := &Keyword{
+						Name: name,
+					}
+					if g.Level == 0 {
+						keyword.Class = directoryKeyword
+					} else {
+						keyword.Class = adverbKeyword
+					}
+					if k, err := keyword.Save(); err == nil {
+						g.Keywords[name] = *k
+					}
 				}
 			}
 		})
