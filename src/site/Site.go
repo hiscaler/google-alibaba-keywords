@@ -6,4 +6,5 @@ type Site interface {
 	SetSeed(seed string)
 	SetQualifyKeywords(keywords []string)
 	Search()
+	Parse()
 }
