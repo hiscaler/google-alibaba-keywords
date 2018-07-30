@@ -12,31 +12,37 @@ import (
 
 // Alibaba
 type Alibaba struct {
-	Url             string
+	url             string
 	Seed            string
-	QualifyKeywords []string
-	keywords        []string
-	searchResult    []string
-	pageSource      []byte
+	QualifyKeywords []string // 限定词
+	keywords        []string // 已有的关键词
+	searchResult    []string // 搜索结果
+	pageSource      []byte   // 页面源码
 	Level           int
 	Keywords        map[string]Keyword
 }
 
-func (a *Alibaba) NewSite(url, seed string) *Alibaba {
-	a.Seed = seed
-	a.Url = fmt.Sprintf("https://www.alibaba.com/search?q=%s&ie=UTF-8", a.Seed)
+func NewSite(url, seed string) *Alibaba {
+	return &Alibaba{
+		url:  fmt.Sprintf("https://www.alibaba.com/search?q=%s&ie=UTF-8", seed),
+		Seed: seed,
+	}
+}
+
+func (a *Alibaba) setUrl() *Alibaba {
+	a.url = fmt.Sprintf("https://www.alibaba.com/search?q=%s&ie=UTF-8", a.Seed)
 
 	return a
 }
 
-func (a *Alibaba) SetUrl(url string) *Alibaba {
-	a.Url = url
-
-	return a
+func (a *Alibaba) getUrl() string {
+	return a.url
 }
 
+// Set `seed keyword` and search url
 func (a *Alibaba) SetSeed(seed string) *Alibaba {
 	a.Seed = seed
+	a.setUrl()
 
 	return a
 }
@@ -48,8 +54,8 @@ func (a *Alibaba) SetQualifyKeywords(keywords []string) *Alibaba {
 }
 
 func (a *Alibaba) Search() *Alibaba {
-	logger.Instance.Info(a.Url)
-	request, _ := http.NewRequest("GET", a.Url, nil)
+	logger.Instance.Info(a.getUrl())
+	request, _ := http.NewRequest("GET", a.getUrl(), nil)
 	request.Header.Set("Connection", "keep-alive")
 	request.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")
 	proxy, _ := url.Parse("http://127.0.0.1:1080")
@@ -79,10 +85,7 @@ func (a *Alibaba) Search() *Alibaba {
 	return a
 }
 
-func (a *Alibaba) Parse(content string) *Alibaba {
-	if len(content) > 0 {
-
-	}
-
+// 解析 Alibaba 爬取结果
+func (a *Alibaba) Parse() *Alibaba {
 	return a
 }
