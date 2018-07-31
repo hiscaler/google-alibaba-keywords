@@ -17,6 +17,8 @@ type ISite interface {
 	SetUrl()                              // 设置要爬取的页面地址
 	SetSeed(seed string)                  // 设置种子词
 	SetQualifyKeywords(keywords []string) // 设置限定词
+	FetchChildren()                       // 设置已有的长尾词
+	AddChild(name string) bool            // 添加长尾词
 	Search()                              // 爬取页面
 	Parse()                               // 解析爬取的页面
 	UpdateMeta()                          // 更新 page_keywords, page_description
@@ -25,6 +27,7 @@ type ISite interface {
 
 type Site struct {
 	ISite
+	Id              int
 	url             string
 	Seed            string
 	QualifyKeywords []string // 限定词
@@ -33,6 +36,7 @@ type Site struct {
 	pageSource      string   // 页面源码
 	Level           int
 	Keywords        map[string]Keyword
+	Children        []string
 }
 
 //func NewSite() ISite {
@@ -56,6 +60,27 @@ func (a *Site) SetSeed(seed string) {
 
 func (a *Site) SetQualifyKeywords(keywords []string) {
 	a.QualifyKeywords = keywords
+}
+
+func (s *Site) FetchChildren() {
+	children := make([]string, 100)
+	for k, v := range children {
+		children[k] = strings.Trim(strings.ToLower(v), " ")
+	}
+
+	s.Children = children
+}
+
+func (s *Site) AddChild(name string) bool {
+	name = strings.Trim(strings.ToLower(name), " ")
+	for _, v := range s.Children {
+		if name == v {
+			return false
+		}
+	}
+
+	s.Children = append(s.Children, name)
+	return true;
 }
 
 func (a *Site) Search() *Site {
