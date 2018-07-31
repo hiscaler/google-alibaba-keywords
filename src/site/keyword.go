@@ -6,8 +6,11 @@ import (
 	"errors"
 	"encoding/json"
 	"fmt"
+	netUrl "net/url"
 	"url"
 	"logger"
+	"io/ioutil"
+	"github.com/buger/jsonparser"
 )
 
 const directoryKeyword = 1
@@ -62,8 +65,57 @@ func (k *Keyword) Save() (*Keyword, error) {
 	if k.Id == 0 {
 		// Insert
 		k.Id = 1
+		response, err := http.PostForm(url.KeywordSubmit(), netUrl.Values{
+			"name": {k.Name},
+		})
+		if err == nil {
+			if response.StatusCode == 200 {
+				jsonBody, _ := ioutil.ReadAll(response.Body)
+				success, ok := jsonparser.GetBoolean(jsonBody, "success")
+				if ok == nil {
+					if success {
+						logger.Instance.Info("Update data success.")
+					} else {
+						errorMessage, _ := jsonparser.GetString(jsonBody, "error", "message")
+						logger.Instance.Info(errorMessage)
+					}
+				} else {
+					logger.Instance.Info("解析 JSON 数据失败。")
+				}
+
+			} else {
+				return k, errors.New(string(response.StatusCode))
+			}
+		} else {
+			return k, err
+		}
 	} else {
 		// Update
+		response, err := http.PostForm(url.KeywordSubmit(), netUrl.Values{
+			"id":   {string(k.Id)},
+			"name": {k.Name},
+		})
+		if err == nil {
+			if response.StatusCode == 200 {
+				jsonBody, _ := ioutil.ReadAll(response.Body)
+				success, ok := jsonparser.GetBoolean(jsonBody, "success")
+				if ok == nil {
+					if success {
+						logger.Instance.Info("Update data success.")
+					} else {
+						errorMessage, _ := jsonparser.GetString(jsonBody, "error", "message")
+						logger.Instance.Info(errorMessage)
+					}
+				} else {
+					logger.Instance.Info("解析 JSON 数据失败。")
+				}
+
+			} else {
+				return k, errors.New(string(response.StatusCode))
+			}
+		} else {
+			return k, err
+		}
 	}
 
 	return k, nil

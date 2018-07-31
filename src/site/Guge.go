@@ -12,7 +12,7 @@ type Guge struct {
 }
 
 // 设置搜索链接地址
-func (g *Guge) setUrl() *Guge {
+func (g *Guge) SetUrl() *Guge {
 	g.url = fmt.Sprintf("https://www.google.com/search?q=%s&ie=UTF-8", g.Seed)
 
 	return g
